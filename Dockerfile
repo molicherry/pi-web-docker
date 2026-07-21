@@ -8,11 +8,15 @@ ARG PI_WEB_VERSION=main
 
 # ─── Builder: clone upstream, install, build ───────────────────────
 FROM node:22-bookworm-slim AS builder
+ARG PI_WEB_VERSION
 
 WORKDIR /build
 
-# 从上游 Git 仓库拉取
-ADD https://github.com/agegr/pi-web.git#${PI_WEB_VERSION} .
+# git clone 比 ADD git# 更可靠（兼容所有 BuildKit 版本）
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates \
+  && rm -rf /var/lib/apt/lists/* \
+  && git clone --depth 1 --branch "${PI_WEB_VERSION}" https://github.com/agegr/pi-web.git . \
+  && rm -rf .git
 
 # 安装依赖 + 构建 Next.js
 RUN npm ci && npm run build && npm prune --omit=dev
@@ -41,7 +45,7 @@ COPY --from=builder /build/.next        ./.next
 COPY --from=builder /build/node_modules ./node_modules
 COPY --from=builder /build/package.json ./
 COPY --from=builder /build/next.config.ts ./
-COPY --from=builder /build/public      ./public
+# public/ not present in upstream git — Next.js serves static assets from .next/
 
 # 启动脚本
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
