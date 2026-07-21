@@ -1,0 +1,54 @@
+# ── pi-web Docker Compose ────────────────────────────────────────
+# Uses the pre-built GHCR image — no build needed.
+#
+# Quick start:
+#   cp .env.example .env
+#   # edit .env — set API key, adjust paths
+#   docker compose up -d
+# ──────────────────────────────────────────────────────────────────
+
+services:
+  pi-web:
+    image: ghcr.io/molicherry/pi-web-docker:${PI_WEB_VERSION:-latest}
+    container_name: ${CONTAINER_NAME:-pi-web}
+    restart: unless-stopped
+
+    user: "${PUID:-1000}:${PGID:-1000}"
+
+    ports:
+      - "127.0.0.1:${PI_WEB_PORT:-30141}:30141"
+
+    volumes:
+      - ${PI_AGENT_DIR:-~/.pi/agent}:/home/piuser/.pi/agent
+      # Project workspace — set PI_WORKSPACE_DIR in .env
+      - ${PI_WORKSPACE_DIR:-~/pi-workspace}:/workspace
+
+    environment:
+      - PORT=30141
+      - HOSTNAME=0.0.0.0
+      - PI_WEB_NO_OPEN=1
+      - PI_CODING_AGENT_DIR=/home/piuser/.pi/agent
+      - NODE_OPTIONS=${NODE_OPTIONS:---max-old-space-size=4096}
+      # API keys (set in .env)
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+    pids_limit: 512
+    mem_limit: ${PI_WEB_MEM_LIMIT:-2g}
+    cpus: "${PI_WEB_CPUS:-2.0}"
+
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:30141').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

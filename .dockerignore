@@ -1,0 +1,13 @@
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Dev
+*.md
+!README.md
+!README.zh.md
+.env
+.env.*
+.git/
+.DS_Store
