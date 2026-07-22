@@ -39,7 +39,8 @@ docker compose up -d
 | 宿主机路径 | 容器路径 | 用途 |
 |---|---|---|
 | `~/.pi/agent` | `/home/piuser/.pi/agent` | pi 配置、会话、模型、认证 |
-| `PI_WORKSPACE_DIR`（环境变量） | `/workspace` | pi 工作的项目文件 |
+| `PI_WORKSPACE_DIR`（环境变量） | `/workspace` | 项目文件 |
+| `PI_NPM_GLOBAL_DIR`（环境变量） | `/home/piuser/.npm-global` | npm 全局包（持久化） |
 
 在 `.env` 中设置 `PI_WORKSPACE_DIR` 指向你的项目根目录。如果项目在其他路径，添加额外卷挂载，**宿主机和容器路径必须一致**：
 
@@ -57,6 +58,7 @@ volumes:
 | `PUID` / `PGID` | `1000` | 宿主机用户 ID，用于文件权限映射 |
 | `PI_AGENT_DIR` | `~/.pi/agent` | pi 配置目录 |
 | `PI_WORKSPACE_DIR` | `~/pi-workspace` | 挂载到 `/workspace` 的项目目录 |
+| `PI_NPM_GLOBAL_DIR` | `~/.pi/npm-global` | npm 全局包（重建容器不丢失） |
 | `ANTHROPIC_API_KEY` | — | Anthropic API key |
 | `OPENAI_API_KEY` | — | OpenAI API key |
 | `DEEPSEEK_API_KEY` | — | DeepSeek API key |

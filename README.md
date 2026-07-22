@@ -39,7 +39,8 @@ docker compose up -d
 | Host Path | Container Path | Purpose |
 |---|---|---|
 | `~/.pi/agent` | `/home/piuser/.pi/agent` | pi config, sessions, models, auth |
-| `PI_WORKSPACE_DIR` (env) | `/workspace` | Project files for pi to work on |
+| `PI_WORKSPACE_DIR` (env) | `/workspace` | Project files |
+| `PI_NPM_GLOBAL_DIR` (env) | `/home/piuser/.npm-global` | npm global packages (persistent) |
 
 Set `PI_WORKSPACE_DIR` in `.env` to your project root. For projects outside that path, add additional volumes with **identical host and container paths**:
 
@@ -57,6 +58,7 @@ volumes:
 | `PUID` / `PGID` | `1000` | Host user for file ownership |
 | `PI_AGENT_DIR` | `~/.pi/agent` | pi config directory |
 | `PI_WORKSPACE_DIR` | `~/pi-workspace` | Project directory mounted to `/workspace` |
+| `PI_NPM_GLOBAL_DIR` | `~/.pi/npm-global` | npm global packages (persists across rebuilds) |
 | `ANTHROPIC_API_KEY` | — | Anthropic API key |
 | `OPENAI_API_KEY` | — | OpenAI API key |
 | `DEEPSEEK_API_KEY` | — | DeepSeek API key |

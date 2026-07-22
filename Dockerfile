@@ -31,6 +31,7 @@ LABEL org.opencontainers.image.description="Dockerized pi-web — Web UI for pi 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     bash ca-certificates curl git gosu procps ripgrep tini vim \
+    python3 python3-pip python3-venv \
   && rm -rf /var/lib/apt/lists/*
 
 # 运行时用户 (UID/GID 在容器启动时通过 --user 覆盖)
@@ -61,3 +62,7 @@ ENV HOSTNAME=0.0.0.0
 
 EXPOSE 30141
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint.sh"]
+
+# npm global prefix for user-installed tools (persisted via volume)
+ENV npm_config_prefix=/home/piuser/.npm-global
+ENV PATH="/home/piuser/.npm-global/bin:${PATH}"

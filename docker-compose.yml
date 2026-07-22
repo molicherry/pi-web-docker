@@ -22,6 +22,8 @@ services:
       - ${PI_AGENT_DIR:-~/.pi/agent}:/home/piuser/.pi/agent
       # Project workspace — set PI_WORKSPACE_DIR in .env
       - ${PI_WORKSPACE_DIR:-~/pi-workspace}:/workspace
+      # npm global packages (user-installed tools persist across rebuilds)
+      - ${PI_NPM_GLOBAL_DIR:-~/.pi/npm-global}:/home/piuser/.npm-global
 
     environment:
       - PORT=30141
